@@ -23,30 +23,55 @@ module.exports = {
             })
             .catch((err) => res.status(500).json(err));
     },
-   // Creates a new thought. Accepts a request body with the entire Thought object.
-  // Because thoughts are associated with Users, we then update the User who created the thought and add the ID of the thought to the thoughts array
-createThought(req, res){
-    Thought.create(req.body)
-    .then((thought) => {
-        return User.findOneAndUpdate(
-           {_id: req.body.userId},
-           { $addToSet: {thoughts: thought._id}},
-           {new: true} 
-        );
-    })
-    .then((user) => {
-        !user
-        ? res.status(404).json({
-            message: 'Thought created, but found no user with that ID',
-          })
-        : res.json('Created the thought 🎉')
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-    })
+    // Creates a new thought. Accepts a request body with the entire Thought object.
+    // Because thoughts are associated with Users, we then update the User who created the thought and add the ID of the thought to the thoughts array
+    createThought(req, res) {
+        Thought.create(req.body)
+            .then((thought) => {
+                return User.findOneAndUpdate({
+                    _id: req.body.userId
+                }, {
+                    $addToSet: {
+                        thoughts: thought._id
+                    }
+                }, {
+                    new: true
+                });
+            })
+            .then((user) => {
+                !user
+                    ?
+                    res.status(404).json({
+                        message: 'Thought created, but found no user with that ID',
+                    }) :
+                    res.json('Created the thought 🎉')
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            })
+    },
+    // create a reation
+    createReaction(req, res) {
+        Thought.findOneAndUpdate({
+            _id: req.params.thoughtId
+        }, {
+            $addToSet: {
+                reactions: req.body
+            }
+        }, {
+            runValidators: true,
+            new: true
+        }).then((thought) => {
+            !thought
+                ?
+                res.status(404).json({
+                    message: 'No thought found with this ID'
+                }) :
+                res.json('created the reaction')
+        })
+    }
 }
 
 
 
-};
