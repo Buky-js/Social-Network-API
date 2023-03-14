@@ -51,6 +51,7 @@ module.exports = {
                 res.status(500).json(err);
             })
     },
+
     // create a reation
     createReaction(req, res) {
         Thought.findOneAndUpdate({
@@ -70,8 +71,23 @@ module.exports = {
                 }) :
                 res.json('created the reaction')
         })
+    },
+    // delete a thought
+    deleteThought(req, res) {
+        Thought.findOneAndDelete({ _id: req.param.thoughtId })
+        .then((thought) => 
+            !thought 
+            ? res.status(404).json({ message: 'No thought with that ID' }) 
+            : User.findOneAndUpdate(
+                { thoughts: req.params.thoughtId}, 
+                {$pull: { thoughts: req.params.thoughtId }}, 
+                { new: true })
+                .then((user) => !user 
+                ? res.json({ message: 'Thhought has been deleted, but no user was found' }) 
+                : res.json(user))
+               
+        )
+        
+        .catch((err) => res.json(err));
     }
 }
-
-
-
