@@ -55,8 +55,17 @@ module.exports = {
             .catch((err) => res.status(500).json(err));
     },
     // update a user
-    updateUser(req, res){
-        User
+    updateUser(req, res) {
+        User.findOneAndUpdate({
+            _id: req.params.userId
+        }, {
+            $set: req.body
+        }, {
+            runValidators: true,
+            new: true
+        }).then((user) => {
+            !user ? res.status(404).json({message: "User with this ID cannot be found"}) : res.json(user)
+        }).catch((err) => res.json(err));
     },
     // add new friend
     createFriend(req, res) {
@@ -91,22 +100,31 @@ module.exports = {
                         $in: user.thoughts
                     }
                 })
-            }).then(() => res.json({message:'User and associated thought deleted!'}))
+            }).then(() => res.json({
+                message: 'User and associated thought deleted!'
+            }))
             .catch((err) => {
                 console.log(err);
                 res.status(500).json(err);
             })
     },
     // delete a friend
-    deleteFriend(req, res){
-        User.findOneAndUpdate({_id: req.params.userId},
-            {$pull: {friends: req.params.friendId}},
-            {new: true}
-            )
-        .then((user) => 
-        !user 
-        ? res.status(404).json({message: "No user with this ID was found"})
-        : res.json('friend deleted and removed from user'))
-        .catch((err) => res.json(err));
+    deleteFriend(req, res) {
+        User.findOneAndUpdate({
+                _id: req.params.userId
+            }, {
+                $pull: {
+                    friends: req.params.friendId
+                }
+            }, {
+                new: true
+            })
+            .then((user) =>
+                !user ?
+                res.status(404).json({
+                    message: "No user with this ID was found"
+                }) :
+                res.json('friend deleted and removed from user'))
+            .catch((err) => res.json(err));
     }
 }

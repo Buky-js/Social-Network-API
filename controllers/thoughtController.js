@@ -105,7 +105,7 @@ module.exports = {
         }).then((thought) => {
             !thought ? res.status(404).json({message: 'thought with this ID cannot be found'})
             : res.json(thought)
-        })
+        }).catch((err)=> res.json(err))
     },
     // delete reaction
     deleteReaction(req, res) {
