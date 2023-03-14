@@ -1,3 +1,6 @@
+const {
+    error
+} = require('console');
 const Thought = require('../models/Thought');
 const User = require('../models/User');
 
@@ -74,20 +77,55 @@ module.exports = {
     },
     // delete a thought
     deleteThought(req, res) {
-        Thought.findOneAndDelete({ _id: req.param.thoughtId })
-        .then((thought) => 
-            !thought 
-            ? res.status(404).json({ message: 'No thought with that ID' }) 
-            : User.findOneAndUpdate(
-                { thoughts: req.params.thoughtId}, 
-                {$pull: { thoughts: req.params.thoughtId }}, 
-                { new: true })
-                .then((user) => !user 
-                ? res.json({ message: 'Thhought has been deleted, but no user was found' }) 
-                : res.json(user))
-               
-        )
-        
-        .catch((err) => res.json(err));
+        Thought.findOneAndDelete({
+                _id: req.params.thoughtId
+            })
+            .then((thought) => {
+                // console.log(thought);
+                !thought
+                    ?
+                    res.status(404).json({
+                        message: 'No thought with that ID'
+                    }) :
+                    res.json('thought has been deleted and removed from user')
+
+            }).catch((err) => res.json(err));
+
+
+    },
+    // update thought
+    updateThought(req, res) {
+        Thought.findOneAndUpdate({
+            _id: req.params.thoughtId
+        }, {
+            $set: req.body
+        }, {
+            runValidators: true,
+            new: true
+        }).then((thought) => {
+            !thought ? res.status(404).json({message: 'thought with this ID cannot be found'})
+            : res.json(thought)
+        })
+    },
+    // delete reaction
+    deleteReaction(req, res) {
+        Thought.findOneAndUpdate({
+                _id: req.params.thoughtId
+            }, {
+                $pull: {
+                    reactions: {
+                        reactionId: req.params.reactionId
+                    }
+                }
+            }, {
+                runValidators: true,
+                new: true
+            })
+            .then((thought) => !thought ?
+                res.status(404).json({
+                    message: "No thought with this ID was found!"
+                }) :
+                res.json(thought))
+            .catch((err) => res.json(err))
     }
 }
