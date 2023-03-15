@@ -40,11 +40,11 @@ node index.js
 
 #### Walkthrough Video
 
-[Click here to see the demo video ]()
+[Click here to see the demo video ](https://youtu.be/_HNDaqIrWAk)
 
 #### Insomnia Screenshot
 
-![Screenshot](./screenshot/insomnia.png)
+![Screenshot](./assets/img/ScreenshotInsomnia.png)
 
 ## License
 
