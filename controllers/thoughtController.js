@@ -109,7 +109,7 @@ module.exports = {
     },
     // delete reaction
     deleteReaction(req, res) {
-        // console.log(req.params.thoughtId, req.params.reactionId);
+        console.log(req.params.thoughtId, req.params.reactionId);
         Thought.findOneAndUpdate({
               _id: req.params.thoughtId
             }, {
